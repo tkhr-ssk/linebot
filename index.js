@@ -2,12 +2,15 @@
 
 const line = require('@line/bot-sdk');
 const express = require('express');
+const request = require('request');
 
 // create LINE SDK config from env variables
 const config = {
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
   channelSecret: process.env.CHANNEL_SECRET,
 };
+
+const googlehome_url = process.env.GOOGLE_HOME_URL;
 
 // create LINE SDK client
 const client = new line.Client(config);
@@ -34,7 +37,13 @@ function handleEvent(event) {
     // ignore non-text-message event
     return Promise.resolve(null);
   }
-
+  request.post({
+    uri: googlehome_url,
+    headers: { "Content-type": "application/x-www-form-urlencoded" },
+    form: {
+      "text": event.message.text
+    }
+  });
   // create a echoing text message
   const echo = { type: 'text', text: event.message.text };
 
